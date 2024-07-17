@@ -1,4 +1,6 @@
-struct Bitstring {
+use std::ops::{Index, Range};
+
+pub struct Bitstring {
     // Packs the strings into bits to
     // and operates on the bits directly
     data: Vec<u8>,
@@ -32,6 +34,28 @@ impl Bitstring {
             length: len,
         }
     }
+
+    pub fn slice(&self, index: Range<usize>) -> String {
+        assert!(index.end <= self.length);
+
+        let mut res = String::from("");
+        for i in index {
+            res.push(self[i])
+        }
+        res
+    }
+}
+
+impl Index<usize> for Bitstring {
+    type Output = char;
+    fn index(&self, index: usize) -> &Self::Output {
+        let bit = (self.data[index / 8] >> (index % 8)) & 1;
+        if bit == 0 {
+            &'0'
+        } else {
+            &'1'
+        }
+    }
 }
 
 #[cfg(test)]
@@ -40,10 +64,20 @@ mod tests {
     use rstest::*;
 
     #[rstest]
-    fn create(#[values("1010", "11001", "000111", "111111111")] input: &str) {
+    fn create(#[values("1010", "11001", "100111", "111111111")] input: &str) {
         let bs = Bitstring::from_string(input);
-        println!("{:?}", bs.data);
-        assert!(bs.data.len() >= 1 && bs.data.len() <= 2);
+        assert!(!bs.data.is_empty() && bs.data.len() <= 2);
         assert!(bs.length == input.chars().count());
+        for (pos, ch) in input.char_indices() {
+            assert!(ch == bs[pos]);
+        }
+    }
+
+    #[rstest]
+    fn range(#[values("1010")] input: &str) {
+        let bs = Bitstring::from_string(input);
+        let v = &bs.slice(1..4);
+        assert!(v == "010");
+        assert!("10" == &bs.slice(0..2));
     }
 }
