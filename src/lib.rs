@@ -72,6 +72,10 @@ impl Bitstring {
     fn __getitem__(&self, index: isize) -> PyResult<u8> {
         Ok(self.get_bit(index as usize))
     }
+
+    fn __str__(&self) -> PyResult<String> {
+        Ok(format!("{}", self))
+    }
 }
 
 impl Bitstring {
