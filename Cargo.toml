@@ -1,10 +1,18 @@
 [package]
-name = "rust-bitstrings"
+name = "packed_bitstring"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+pyo3 = {version = "0.22.2", features = ["extension-module"]}
+
+[lib]
+crate-type = ["cdylib"]
+
 [dev-dependencies]
 rstest = "0.21.0"
+
+[package.metadata.maturin]
+metadata="packed_bitstring"

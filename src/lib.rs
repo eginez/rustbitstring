@@ -2,8 +2,10 @@ use std::{
     fmt::{Display, Formatter, Result},
     ops::{Index, Range},
 };
+use pyo3::prelude::*;
 
 #[derive(Debug)]
+#[pyclass]
 pub struct Bitstring {
     // Packs the strings into bits to
     // and operates on the bits directly
@@ -18,7 +20,9 @@ impl Display for Bitstring {
     }
 }
 
+#[pymethods]
 impl Bitstring {
+    #[new]
     pub fn from_string(data: &str) -> Self {
         let len = data.chars().count();
         let capacity = (len + 7) / 8;
@@ -47,15 +51,6 @@ impl Bitstring {
         Some((index / 8, (index % 8) as u8))
     }
 
-    pub fn slice(&self, index: Range<usize>) -> String {
-        assert!(index.end <= self.length);
-
-        let mut res = String::from("");
-        for i in index {
-            res.push(self[i])
-        }
-        res
-    }
 
     pub fn reverse(&self) -> Bitstring {
         let mut temp = vec![0u8; self.data.len()];
@@ -74,6 +69,22 @@ impl Bitstring {
         let (byte, bit) = self._calculate_byte_bit(index).unwrap();
         (self.data[byte] >> bit) & 1
     }
+    fn __getitem__(&self, index: isize) -> PyResult<u8> {
+        Ok(self.get_bit(index as usize))
+    }
+}
+
+impl Bitstring {
+    pub fn slice(&self, index: Range<usize>) -> String {
+        assert!(index.end <= self.length);
+
+        let mut res = String::from("");
+        for i in index {
+            res.push(self[i])
+        }
+        res
+    }
+
 }
 
 impl Index<usize> for Bitstring {
@@ -85,6 +96,12 @@ impl Index<usize> for Bitstring {
             &'1'
         }
     }
+}
+#[pymodule]
+fn packed_bitstring(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    // m.add_function(wrap_pyfunction!(create_bitstring, m)?)?;
+    let _ = m.add_class::<Bitstring>();
+    Ok(())
 }
 
 #[cfg(test)]

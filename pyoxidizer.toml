@@ -1,0 +1,9 @@
+[default]
+build = { cargo_args = "--release" }
+
+[[default.python_distributions]]
+name = "packed_bitstring"
+[[default.python_distributions.default_python_packaging_wheels]]
+name = "packed_bitstring"
+
+[default.python_distributions.default_python_packaging_wheels.maturin]
