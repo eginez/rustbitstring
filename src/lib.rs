@@ -2,10 +2,13 @@ use std::{
     fmt::{Display, Formatter, Result},
     ops::{Index, Range},
 };
+use std::collections::hash_map::DefaultHasher;
+use std::hash::{Hash, Hasher};
 use pyo3::prelude::*;
 
 #[derive(Debug)]
-#[pyclass]
+#[derive(PartialEq, Hash)]
+#[pyclass(frozen, eq, hash)]
 pub struct Bitstring {
     // Packs the strings into bits to
     // and operates on the bits directly
