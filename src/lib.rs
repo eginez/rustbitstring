@@ -1,13 +1,10 @@
+use pyo3::prelude::*;
 use std::{
     fmt::{Display, Formatter, Result},
     ops::{Index, Range},
 };
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
-use pyo3::prelude::*;
 
-#[derive(Debug)]
-#[derive(PartialEq, Hash)]
+#[derive(Debug, PartialEq, Hash)]
 #[pyclass(frozen, eq, hash)]
 pub struct Bitstring {
     // Packs the strings into bits to
@@ -54,7 +51,6 @@ impl Bitstring {
         Some((index / 8, (index % 8) as u8))
     }
 
-
     pub fn reverse(&self) -> Bitstring {
         let mut temp = vec![0u8; self.data.len()];
         for i in (0..self.length).rev() {
@@ -91,7 +87,6 @@ impl Bitstring {
         }
         res
     }
-
 }
 
 impl Index<usize> for Bitstring {
